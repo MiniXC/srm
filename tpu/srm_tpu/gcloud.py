@@ -118,11 +118,13 @@ def list_vms_all_zones(
     *,
     project: str,
 ) -> list[dict]:
-    """List TPU VMs across zones.  Each dict gets an extra ``_zone`` key."""
+    """List TPU VMs across zones.  Each dict gets a ``zone`` key set to the
+    zone the VM was found in (overwriting whatever gcloud puts there).
+    """
     results: list[dict] = []
     for zone in zones:
         for vm in list_vms(zone, project=project):
-            vm["_zone"] = zone
+            vm["zone"] = zone
             results.append(vm)
     results.sort(key=lambda v: v.get("name", "").split("/")[-1])
     return results

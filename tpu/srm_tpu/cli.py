@@ -244,7 +244,7 @@ def status(
 
         for vm in vms:
             name = vm.get("name", "?").split("/")[-1]
-            zone = vm.get("_zone", "?")
+            zone = vm.get("zone", "?")
             accel = vm.get("acceleratorType", "?").split("/")[-1] if "acceleratorType" in vm else "?"
             state = vm.get("state", "?")
             created = vm.get("createTime", "?")
