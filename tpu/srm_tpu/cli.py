@@ -244,7 +244,7 @@ def status(
 
         for vm in vms:
             name = vm.get("name", "?").split("/")[-1]
-            zone = vm.get("zone", "?").split("/")[-1] if "zone" in vm else "?"
+            zone = vm.get("_zone", "?")
             accel = vm.get("acceleratorType", "?").split("/")[-1] if "acceleratorType" in vm else "?"
             state = vm.get("state", "?")
             created = vm.get("createTime", "?")
@@ -434,8 +434,12 @@ def delete(
         return
 
     if name is None:
-        typer.echo("Provide a VM name or --filter", err=True)
-        raise typer.Exit(2)
+        # Default: delete all PREEMPTED VMs across all zones.
+        deleted = delete_by_filter(
+            zones, project=project, state="PREEMPTED", log=log, dry_run=dry_run,
+        )
+        typer.echo(f"deleted {len(deleted)} PREEMPTED VM(s)")
+        return
 
     # Find the zone for this VM.
     zone = None
