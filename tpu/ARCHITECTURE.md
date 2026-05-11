@@ -82,13 +82,13 @@ srm/tpu/
 
 ### Distribution
 
-- Single distribution `srm-tpu` published to PyPI (or the project's private
-  index). Pinned deps: `typer`, `pyyaml`, `rich` (for tables/logs).
-  No `torch` or `torchax` dependency — the library only manages TPU VMs
-  and ships project code onto them; it never imports torch itself.
-- Console entry point `srm-tpu = srm_tpu.cli:app`.
-- `pip install srm-tpu[tpu]` pulls torch (CPU) + jax[tpu] + torchax; the bare
-  install is a laptop-side tool only.
+Single Python package `srm-tpu` living in this repository. No PyPI publication
+needed — the bootstrap script installs it directly from git:
+- Console entry point `srm-tpu = srm_tpu.cli:app`. Installable directly from
+  this repo: `pip install git+https://github.com/MiniXC/srm.git`. Pinned deps:
+  `typer`, `pyyaml`, `rich` (for tables/logs). No `torch` or `torchax`
+  dependency — the library only manages TPU VMs and ships project code onto
+  them; it never imports torch itself.
 
 ### 1.1 What already exists in `sdm/` and what we keep or discard
 
@@ -605,7 +605,7 @@ if ! command -v "$PY" >/dev/null; then
     sudo apt-get update -y && sudo apt-get install -y "$PY" "${PY}-venv"
 fi
 [[ -d .venv ]] || uv venv --python "$PY" .venv
-uv pip install --quiet "srm-tpu[tpu]"
+uv pip install --quiet "srm-tpu @ git+https://github.com/MiniXC/srm.git"
 exec uv run python -m srm_tpu.bootstrap "$@"
 ```
 
@@ -794,7 +794,7 @@ mocks `gcloud`/`gsutil`).
 
 A project moving off the sdm scripts onto `srm-tpu` does, in order:
 
-1. `pip install srm-tpu[tpu]`.
+1. Install the library: `pip install git+https://github.com/MiniXC/srm.git`.
 2. Install CPU torch + `jax[tpu]` + `torchax` in the project environment
    (replaces the old `torch_xla[tpu]` + libtpu wheel dance).
 3. Translate the pool list from `TPU_RESOURCES.md` into `srm-tpu.yaml`
