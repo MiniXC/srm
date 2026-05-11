@@ -1,0 +1,28 @@
+[project]
+name = "srm-tpu"
+version = "0.1.0"
+description = "TPU helper library for ML experiments"
+requires-python = ">=3.11"
+dependencies = [
+    "typer>=0.12",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+tpu = [
+    "torch>=2.7",
+    "jax[tpu]>=0.5",
+    "torchax>=0.0.12",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.14",
+]
+
+[project.scripts]
+srm-tpu = "srm_tpu.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

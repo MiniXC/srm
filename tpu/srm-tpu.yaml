@@ -1,0 +1,64 @@
+# srm-tpu.yaml — example inventory file
+# Copy this to your project root and edit.
+
+project:
+  gcp_project: ml-edinburgh
+  default_zone: europe-west4-a
+  log_dir: .srm-tpu/logs
+  pid_dir: .srm-tpu/pids
+  remote_repo: https://github.com/MiniXC/srm.git
+  remote_branch: main
+  remote_workdir: ~/srm
+  tmux_session: srm
+
+secrets:
+  - WANDB_API_KEY
+  - HF_TOKEN
+
+pools:
+  v6e-euw4:
+    accel: v6e-8
+    zone: europe-west4-a
+    spot: true
+    instances: 64
+  v6e-use1:
+    accel: v6e-8
+    zone: us-east1-d
+    spot: true
+    instances: 64
+  v5e-euw4:
+    accel: v5litepod-8
+    zone: europe-west4-b
+    spot: true
+    instances: 64
+  v5e-usc1:
+    accel: v5litepod-8
+    zone: us-central1-a
+    spot: true
+    instances: 64
+  v4-od:
+    accel: v4-8
+    zone: us-central2-b
+    spot: false
+    instances: 32
+  v4-spot:
+    accel: v4-8
+    zone: us-central2-b
+    spot: true
+    instances: 32
+
+bootstrap:
+  python: "3.11"
+  apt:
+    - tmux
+  torch:
+    torch: "2.7.1"
+    torchaudio: "2.7.1"
+    jax: "tpu"
+    torchax: "*"
+  project_install: "uv sync --extra dev --extra tpu"
+  extra_pip: []
+  smoke_test: >-
+    import torch, torchax;
+    t = torch.randn(2, device='jax');
+    print(t.device, torchax.__version__)
