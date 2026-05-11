@@ -219,7 +219,10 @@ def load_blizzard(
         df = df.dropna(subset=["mos"])
 
         # Build full filepath relative to cache.
-        df["filepath"] = df["filepath_deg"].apply(lambda p: str(wav_dir / p))
+        # Tarball extracts directly into wav_dir, so strip the Blizzard_YYYY/ prefix.
+        df["filepath"] = df["filepath_deg"].apply(
+            lambda p: str(wav_dir / p.split("/", 1)[1] if "/" in p else p)
+        )
 
         frames.append(df[["year", "subtask", "system", "filepath", "mos", "lang"]].rename(
             columns={"mos": "file_mos"}

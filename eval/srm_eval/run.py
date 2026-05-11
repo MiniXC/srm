@@ -27,17 +27,13 @@ def compute_distances(
     data: BlizzardData,
     *,
     distance_kind: str = "w2_perdim",
-    show_progress: bool = True,
 ) -> pd.DataFrame:
-    """Extract features and compute Wasserstein distance to reference (system A)
-    for every system in every (year, subtask).
-    """
+    """Extract features and compute Wasserstein distance to reference (system A)."""
     dist_fn = DISTANCE_FNS[distance_kind]
     sys_mos = data.system_mos()
     rows = []
 
     for (year, subtask), grp in sys_mos.groupby(["year", "subtask"]):
-        # Reference distribution = system A.
         ref_system = grp[grp["system"] == "A"]
         if ref_system.empty:
             ref_system = grp.loc[grp["mean_mos"].idxmax()]
@@ -96,8 +92,12 @@ def run_pipeline(
     all_corr: list[pd.DataFrame] = []
 
     for ext_name in extractor_names:
-        if ext_name == "whisper-l20":
+        if ext_name in ("whisper-l20", "whisper"):
+            from srm_eval.extractors.whisper import WhisperExtractor
             extractor = WhisperExtractor(device=device, cache_dir=f"{cache_dir}/features")
+        elif ext_name.startswith("wespeaker"):
+            from srm_eval.extractors.wespeaker import WeSpeakerExtractor
+            extractor = WeSpeakerExtractor(device=device, cache_dir=f"{cache_dir}/features")
         else:
             print(f"unknown extractor: {ext_name}, skipping")
             continue

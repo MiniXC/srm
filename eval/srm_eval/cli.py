@@ -81,9 +81,12 @@ def distance(
 
     data = load_blizzard(years=year_list, download=False)
 
-    if extractor == "whisper-l20":
+    if extractor in ("whisper-l20", "whisper"):
         from srm_eval.extractors.whisper import WhisperExtractor
         ext = WhisperExtractor(device=device, cache_dir=f"{cache_dir}/features")
+    elif extractor.startswith("wespeaker"):
+        from srm_eval.extractors.wespeaker import WeSpeakerExtractor
+        ext = WeSpeakerExtractor(device=device, cache_dir=f"{cache_dir}/features")
     else:
         print(f"unknown extractor: {extractor}")
         raise typer.Exit(1)
